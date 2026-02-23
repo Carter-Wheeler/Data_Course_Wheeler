@@ -1,0 +1,13 @@
+1. carter@dhcp-10-5-106-69 ~ % cd Desktop
+carter@dhcp-10-5-106-69 Desktop % mkdir First_Exam_YAY
+
+2. /Users/carter/Desktop/First_Exam_YAY
+
+3. carter@dhcp-10-5-106-69 Fastq_16s % cp *.fastq /Users/carter/Desktop/First_Exam_YAY     
+
+5. carter@dhcp-10-5-106-69 EXAM_1 %  for file in *fastq; do 
+cp "$file" "$file.Wheeler"
+done
+
+6. line count: 31956 F3D6_S194_L001_R1_001.fastq.Wheeler
+carter@dhcp-10-5-106-69 EXAM_1 % wc -l F3D6_S194_L001_R1_001.fastq.Wheeler
