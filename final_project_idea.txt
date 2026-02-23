@@ -1,0 +1,15 @@
+Describe your idea for a data analysis final project:
+
+1. My idea for a data analysis final project is a project which explores the
+correlations between social media use and mental health conditions.
+
+
+Describe the sort of data you will use, potential sources, and what the data might look like:
+
+2. The data I will use will most likely come from medical journals and data sets
+which contain data from studies that recorded data about social media use and
+specific mental disorders like anxiety and depression. Also studying the
+emergence of anxiety and depression diagnosis over time. Genetic variable?
+
+potential journal and data set:
+https://www.sciencedirect.com/science/article/pii/S2352340921008684?
