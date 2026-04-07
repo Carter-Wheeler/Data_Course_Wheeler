@@ -1,0 +1,40 @@
+1) Are any of your predicted response values from your best model scientifically
+meaningless? Explain.
+
+My best model mod4 didn't show any meaningless values per say but it did show 
+some predictions that didn't line up very well with the actual data. At 25
+degrees, the model showed some very low growth rates even though many observed
+values at that temperature were higher. This may indicate that the linear model
+is not accuratly capturing the relationship. This lead to possibly unrealistic 
+predictions but none that were meaningless like negative predictions or
+something like that. 
+
+2) In your plots, did you find any non-linear relationships? Do a bit of 
+research online and give a link to at least one resource explaining how to deal 
+with modeling non-linear relationships in R.
+
+Yes, the plot showing growth rate versus temperature or light showed non-linear
+relationships. An example would be that the mushroom growth may stop at high
+termperatures which would be a curved relationship rather than linear.
+https://www.statmethods.net/advstats/nonlinear.html
+
+3) Write the code you would use to model the data found in 
+“/Data/non_linear_relationship.csv” with a linear model 
+(there are a few ways of doing this)
+
+library(tidyverse)
+
+nl_data <- read.csv("../../Data/non_linear_relationship.csv")
+
+mod_poly <- lm(response ~ predictor + I(predictor^2), data = nl_data)
+summary(mod_poly)
+
+library(splines)
+mod_spline <- lm(response ~ ns(predictor, df = 4), data = nl_data)
+summary(mod_spline)
+
+ggplot(nl_data, aes(x = predictor, y = response)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = TRUE, color = "blue") +
+  ggtitle("Non-linear Modeling Example")
+
