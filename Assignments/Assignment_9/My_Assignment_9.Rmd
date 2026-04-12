@@ -1,0 +1,80 @@
+---
+title: "Graduate SchoolAdmissions Modeling"
+output: html_document
+date: "2026-04-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1. Introduction
+This analysis explores factors that influence graduate school admission. The response variable admit is binary (1 = admitted, 0 = not admitted). Predictors include GRE score, GPA, and undergraduate institution rank (1 = highest rank).
+
+2. Load Data and Packages
+```{r}
+library(tidyverse)
+
+admissions <- read.csv("../../Data/GradSchool_Admissions.csv")
+
+head(admissions)
+summary(admissions)
+```
+
+3. Data Exploration
+```{r}
+mean(admissions$admit)
+ggplot(admissions, aes(gre)) +
+  geom_histogram(bins = 30)
+ggplot(admissions, aes(gre)) +
+  geom_histogram(bins = 30)
+ggplot(admissions, aes(factor(rank))) +
+  geom_bar()
+```
+
+4. Data Preparation
+```{r}
+admissions$rank <- factor(admissions$rank)
+```
+
+5. Logistic Regression Model
+```{r}
+model <- glm(admit ~ gre + gpa + rank,
+             data = admissions,
+             family = binomial)
+
+summary(model)
+```
+
+6. Predicted Probabilities
+```{r}
+admissions$prob <- predict(model, type = "response")
+head(admissions)
+```
+
+7. Simple Interpretation
+-Higher GRE scores increase admission probability
+-Higher GPA increases admission probability
+-Lower-ranked schools (higher rank number) reduce admission probability compared to rank 1
+
+8. Conclusion
+GRE, GPA, and undergraduate institution rank are important predictors of graduate school admission.
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
