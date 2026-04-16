@@ -1,0 +1,112 @@
+---
+title: "Wheeler_Skills_Test_3"
+output: html_document
+date: "2026-04-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+df <- read.csv("FacultySalaries_1995.csv")
+
+df_long <- df %>%
+  pivot_longer(
+    cols = c(AvgFullProfSalary, AvgAssocProfSalary, AvgAssistProfSalary),
+    names_to = "Rank",
+    values_to = "Salary"
+  )
+df_long <- df_long %>%
+  mutate(
+    Rank = case_when(
+      Rank == "AvgAssistProfSalary" ~ "Assist",
+      Rank == "AvgAssocProfSalary" ~ "Assoc",
+      Rank == "AvgFullProfSalary" ~ "Full"
+    )
+  )
+df_long <- df_long %>%
+  mutate(
+    Rank = factor(Rank, levels = c("Assist", "Assoc", "Full")),
+    Tier = factor(Tier, levels = c("I", "IIA", "IIB"))
+  )
+
+ggplot(
+  df_long |> dplyr::filter(!is.na(Rank), !is.na(Tier)),
+  aes(x = Rank, y = Salary, fill = Rank)
+) +
+  geom_boxplot(color = "black") +
+  facet_wrap(~ Tier, nrow = 1) +
+  scale_fill_manual(values = c(
+    "Assist" = "#F8766D",
+    "Assoc" = "#00BA38",
+    "Full" = "#619CFF"
+  )) +
+  theme_bw(base_size = 14) +
+  labs(x = "Rank", y = "Salary", fill = "Rank") +
+  theme(
+    strip.background = element_blank(), 
+    strip.text = element_text(size = 16),
+    panel.border = element_blank(),   
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.spacing = unit(1.5, "lines"),
+  )
+ ggsave("plot.png", width = 12, height = 3)
+```
+
+
+```{r}
+
+anova_model <- aov(Salary ~ State + Tier + Rank, data = df_long)
+summary(anova_model)
+```
+
+```{r}
+juniper <- read.csv("Juniper_Oils.csv")
+juniper_long <- juniper %>%
+  pivot_longer(
+    cols = c(
+      alpha.pinene, para.cymene, alpha.terpineol, cedr.9.ene,
+      alpha.cedrene, beta.cedrene, cis.thujopsene, alpha.himachalene,
+      beta.chamigrene, cuparene, compound.1, alpha.chamigrene, widdrol,
+      cedrol, beta.acorenol, alpha.acorenol, gamma.eudesmol, beta.eudesmol,
+      alpha.eudesmol, cedr.8.en.13.ol, cedr.8.en.15.ol, compound.2,
+      thujopsenal
+    ),
+    names_to = "Compound",
+    values_to = "Concentration"
+  )
+```
+
+```{r}
+ggplot(juniper_long, aes(x = YearsSinceBurn, y = Concentration)) +
+  geom_smooth(method = "loess", se = TRUE, color = "blue", fill = "grey80") +
+  facet_wrap(~ Compound, scales = "free_y") +
+  labs(
+    x = "Years Since Burn",
+    y = "Concentration"
+  ) +
+  theme_bw(base_size = 12) +
+  theme(
+    panel.border = element_blank(),
+    axis.line = element_blank(),
+    strip.background = element_blank(),
+    panel.grid.major = element_line(color = "grey85"),
+    panel.grid.minor = element_line(color = "grey92")
+  )
+```
+
+```{r}
+library(broom)
+library(dplyr)
+
+model <- glm(Concentration ~ Compound * YearsSinceBurn,
+             data = juniper_long)
+
+significant_results <- tidy(model) %>%
+  filter(p.value < 0.05)
+
+significant_results
+```
+
