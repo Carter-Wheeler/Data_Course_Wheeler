@@ -1,0 +1,125 @@
+---
+title: "Final Project: Power vs Precision"
+output: html_document
+date: "2026-04-24"
+---
+I am fasicinated by the game of golf and the constant persuit of finding ways to improve and lower my score. Power has become a popular topic in the world of golf with players hitting the ball farther every year but the precise skills like putting and chipping around the green also play a strong part in determining a players score. My goal with this project is evaluate which physiological skill set is more predictive of scoring performance on the PGA Tour.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(ggplot2)
+
+golf <- read.csv("pga_tour_stats_2020.csv")
+golf_clean <- golf %>%
+  select(
+    SCORING_AVG_OVERALL,
+    TEE_AVG_DRIVING_DISTANCE,
+    TEE_AVG_CLUB_HEAD_SPEED,
+    TEE_DRIVING_ACCURACY_PCT,
+    GIR_PCT_OVERALL,
+    PUTTING_AVG_OVERALL
+  ) %>%
+  na.omit()
+```
+
+### Background
+
+Professional golf performance is measured using several key metrics:
+
+- Driving Distance: average distance of tee shots (power)
+- Driving Accuracy: percentage of fairways hit (control)
+- Greens in Regulation (GIR): ability to reach the green efficiently
+- Putting Average: efficiency on the green
+
+These metrics represent different aspects of biomechanics and motor control. Understanding which of these best predicts scoring can provide insight into the biological demands of elite golf performance.
+
+### Results
+
+#### Power vs Scoring
+```{r, message=FALSE}
+
+ggplot(golf_clean, aes(TEE_AVG_DRIVING_DISTANCE, SCORING_AVG_OVERALL)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Power (Driving Distance) vs Scoring")
+```
+
+The relationship between driving distance and scoring average appears relatively weak, with only a slight trend toward improved scoring at greater distances. While longer drives may provide advantageous positioning, the variability suggests that power alone is not a strong predictor of performance.
+
+
+#### Precision (GIR) vs Scoring
+```{r, message=FALSE}
+ggplot(golf_clean, aes(GIR_PCT_OVERALL, SCORING_AVG_OVERALL)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Precision (GIR) vs Scoring")
+```
+
+Greens in Regulation (GIR) shows a stronger negative relationship with scoring average, indicating that players who consistently reach the green in fewer strokes tend to achieve lower scores. This highlights the importance of precision in approach shots.
+
+
+#### Putting Performance vs Scoring
+```{r, message=FALSE}
+ggplot(golf_clean, aes(PUTTING_AVG_OVERALL, SCORING_AVG_OVERALL)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Putting vs Scoring")
+```
+
+Putting performance demonstrates a clear relationship with scoring, where more efficient putting is associated with lower scoring averages. This suggests that fine motor control and consistency on the green are critical components of success.
+
+
+### Statistical Analysis
+```{r, message=FALSE}
+model <- lm(
+  SCORING_AVG_OVERALL ~ 
+    TEE_AVG_DRIVING_DISTANCE +
+    TEE_AVG_CLUB_HEAD_SPEED +
+    TEE_DRIVING_ACCURACY_PCT +
+    GIR_PCT_OVERALL +
+    PUTTING_AVG_OVERALL,
+  data = golf_clean
+)
+
+summary(model)
+```
+
+The regression model evaluates the relative contributions of power and precision to scoring performance. While power-related variables such as driving distance and club head speed contribute to performance, precision-based metrics—particularly GIR and putting—are expected to show stronger relationships with scoring.
+These results suggest that neuromuscular control and consistency may be more important than raw power in elite golf performance.
+
+### Pricipal Component Analysis 
+
+```{r, message=FALSE}
+pca_data <- golf_clean %>%
+  select(
+    TEE_AVG_DRIVING_DISTANCE,
+    TEE_AVG_CLUB_HEAD_SPEED,
+    TEE_DRIVING_ACCURACY_PCT,
+    GIR_PCT_OVERALL,
+    PUTTING_AVG_OVERALL
+  )
+
+pca <- prcomp(pca_data, scale = TRUE)
+
+# Get PCA scores (player positions)
+pca_scores <- as.data.frame(pca$x)
+
+ggplot(pca_scores, aes(PC1, PC2)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "PCA of Golf Performance Metrics",
+       x = "PC1",
+       y = "PC2")
+```
+
+Principal Component Analysis (PCA) was used to reduce multiple performance variables into a smaller number of underlying components. The first principal component (PC1) represents the largest source of variation and likely reflects overall performance or precision-based traits. The second component (PC2) may separate power-based variables from precision-based variables.
+
+PCA reveals that golf performance is structured along two main axes: a power-based component (driving performance) and a precision-based component (approach and putting performance). This supports the idea that elite golf success is determined by a combination of distinct physiological systems rather than a single dominant trait.
+
+### Conclusion
+Overall, this analysis indicates that precision-based skills are stronger predictors of scoring performance than power-based metrics. From a biological perspective, this supports the idea that fine motor control and coordination play a greater role than maximal force production in determining success in professional golf.
+
+
+
+
