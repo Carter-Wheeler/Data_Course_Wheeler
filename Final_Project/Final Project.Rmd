@@ -36,6 +36,8 @@ Professional golf performance is measured using several key metrics:
 These metrics represent different aspects of biomechanics and motor control. Understanding which of these best predicts scoring can provide insight into the biological demands of elite golf performance.
 
 ### Results
+The following plots and models were generated using 2020 PGA tour data retrieved from an article written by Steve Russo called "PGA TOUR STATS - 2020 SEASON
+Stats for the PGA Tour 2020 Season".
 
 #### Power vs Scoring
 ```{r, message=FALSE}
